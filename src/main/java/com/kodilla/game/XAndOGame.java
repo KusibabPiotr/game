@@ -1,6 +1,9 @@
 package com.kodilla.game;
 
 import javafx.application.Application;
+import javafx.application.Platform;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -14,12 +17,16 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class XAndOGame extends Application {
 
     private static final int PANE_HEIGHT = 600;
     private static final int PANE_WIDTH = 605;
     private final Image imgBackground = new Image("file:src/main/resources/paladin.jpg");
     private GameLogic gameLogic = new GameLogic();
+    private List<Square> allSquares = new ArrayList<>();
 
     @Override
     public void start(Stage primaryStage) throws Exception {
@@ -44,6 +51,7 @@ public class XAndOGame extends Application {
                 tile.setTranslateX(j * 200);
                 tile.setTranslateY(i * 200);
                 tile.setId(""+i+j);
+                allSquares.add(tile);
                 root.getChildren().add(tile);
             }
         }
@@ -52,13 +60,14 @@ public class XAndOGame extends Application {
         return root;
     }
 
+
     private void addButtons(AnchorPane root) {
         addNewGameButton(root);
         addGameRulesButton(root);
         addExitButton(root);
     }
 
-    private void addExitButton(AnchorPane root) {
+    private void addExitButton(AnchorPane root){
         Button exit = new Button("Exit");
         exit.setLayoutX(403.0);
         exit.setLayoutY(1.0);
@@ -66,6 +75,12 @@ public class XAndOGame extends Application {
         exit.setPrefWidth(197);
         exit.setId("exit");
         root.getChildren().add(exit);
+        exit.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                Platform.exit();
+            }
+        });
     }
 
     private void addGameRulesButton(AnchorPane root) {
@@ -76,6 +91,12 @@ public class XAndOGame extends Application {
         game_rules.setPrefWidth(200);
         game_rules.setId("rules");
         root.getChildren().add(game_rules);
+        game_rules.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                Platform.exit();
+            }
+        });
     }
 
     private void addNewGameButton(AnchorPane root) {
@@ -86,6 +107,13 @@ public class XAndOGame extends Application {
         new_game.setPrefWidth(198);
         new_game.setId("new");
         root.getChildren().add(new_game);
+        new_game.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                gameLogic.createGameTableWithDefaultValues();
+                allSquares.forEach(e -> e.getText().setText(""));
+            }
+        });
     }
 
 
@@ -97,7 +125,7 @@ public class XAndOGame extends Application {
     public class Square extends StackPane {
         private static final int SQUARE_HEIGHT = 200;
         private static final int SQUARE_WIDTH = 200;
-        private final Text text = new Text();
+        private Text text = new Text();
 
         public Square(){
             Rectangle border = new Rectangle(SQUARE_WIDTH,SQUARE_HEIGHT);
@@ -126,15 +154,10 @@ public class XAndOGame extends Application {
                         }
                     }
                 }
-                if (gameLogic.isGameFinished()){
+                if (gameLogic.checkIfGameFinished()){
                     System.out.println("GAME OVER");
                 }
             });
-//            setOnMouseReleased(event -> {
-//                if (gameLogic.checkIfGameFinished()){
-//                    System.out.println("GAME OVER");
-//                }
-//            });
         }
 
         private void drawX(){
@@ -151,6 +174,10 @@ public class XAndOGame extends Application {
 
         public Text getText() {
             return text;
+        }
+
+        public void setText(Text text) {
+            this.text = text;
         }
     }
 
