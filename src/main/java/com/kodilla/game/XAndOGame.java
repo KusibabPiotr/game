@@ -4,9 +4,12 @@ import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.input.MouseButton;
@@ -17,6 +20,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,10 +31,13 @@ public class XAndOGame extends Application {
     private final Image imgBackground = new Image("file:src/main/resources/paladin.jpg");
     private GameLogic gameLogic = new GameLogic();
     private List<Square> allSquares = new ArrayList<>();
+    private VBox rules;
 
     @Override
     public void start(Stage primaryStage) throws Exception {
         Scene scene = new Scene(createParent());
+//        scene.getStylesheets().add(getClass().getResource("/style.css").toExternalForm());
+        rules = getRulesView();
         primaryStage.setScene(scene);
         primaryStage.setTitle("X's and O's Game");
         primaryStage.setResizable(false);
@@ -58,6 +65,11 @@ public class XAndOGame extends Application {
         addButtons(root);
         gameLogic.createGameTableWithDefaultValues();
         return root;
+    }
+
+    private VBox getRulesView() throws IOException {
+        VBox rules = FXMLLoader.load(getClass().getResource("/rules.fxml"));
+        return rules;
     }
 
 
@@ -94,7 +106,10 @@ public class XAndOGame extends Application {
         game_rules.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                Platform.exit();
+                Stage stage = new Stage();
+                stage.setTitle("Game Rules");
+                stage.setScene(new Scene(rules));
+                stage.show();
             }
         });
     }
@@ -154,8 +169,38 @@ public class XAndOGame extends Application {
                         }
                     }
                 }
-                if (gameLogic.checkIfGameFinished()){
-                    System.out.println("GAME OVER");
+                if (gameLogic.checkIfPlayerWon()){
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                    alert.setHeaderText("Winner!!");
+                    alert.setContentText("Player won this game!");
+                    alert.setTitle("Winner!!");
+                    alert.setResizable(false);
+                    alert.setHeight(20);
+                    alert.show();
+                    gameLogic.createGameTableWithDefaultValues();
+                    allSquares.forEach(e -> e.getText().setText(""));
+                }
+                if (gameLogic.checkIfComputerWon()){
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                    alert.setHeaderText("Looser!!");
+                    alert.setContentText("Computer won this game!");
+                    alert.setTitle("Looser!!");
+                    alert.setResizable(false);
+                    alert.setHeight(20);
+                    alert.show();
+                    gameLogic.createGameTableWithDefaultValues();
+                    allSquares.forEach(e -> e.getText().setText(""));
+                }
+                if (gameLogic.checkIfDraw()){
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                    alert.setHeaderText("Draw game!!");
+                    alert.setContentText("It was a typical draw!");
+                    alert.setTitle("Draw game!!");
+                    alert.setResizable(false);
+                    alert.setHeight(20);
+                    alert.show();
+                    gameLogic.createGameTableWithDefaultValues();
+                    allSquares.forEach(e -> e.getText().setText(""));
                 }
             });
         }
