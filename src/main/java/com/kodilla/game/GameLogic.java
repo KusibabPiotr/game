@@ -4,9 +4,8 @@ import java.util.Random;
 
 public class GameLogic {
     private boolean isXTurn = true;
-    private boolean isGameRunning = true;
     private String[][] table;
-    private Random random = new Random();
+    private final Random random = new Random();
 
     public boolean isxTurn() {
         return isXTurn;
@@ -25,7 +24,6 @@ public class GameLogic {
         }
         this.table = table;
         this.isXTurn = true;
-        this.isGameRunning = true;
     }
 
 
@@ -86,8 +84,6 @@ public class GameLogic {
         return count == 9;
     }
 
-
-
     public void markAMove(XAndOGame.Square square) {
         String text = square.getText().getText();
         String[] split = square.getId().split("");
@@ -104,8 +100,8 @@ public class GameLogic {
             int j = random.nextInt(3);
             if (table[i][j].equals("")){
                 XAndOGame.Square square = squares[i][j];
-                markAMove(square);
                 square.drawO();
+                table[i][j] = "O";
                 isXTurn = true;
             }
         }

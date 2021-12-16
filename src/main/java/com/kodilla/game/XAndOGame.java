@@ -6,13 +6,11 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
-import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
-import javafx.scene.input.MouseButton;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
@@ -21,24 +19,21 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 public class XAndOGame extends Application {
 
     private static final int PANE_HEIGHT = 600;
     private static final int PANE_WIDTH = 605;
     private final Image imgBackground = new Image("file:src/main/resources/paladin.jpg");
-    private GameLogic gameLogic = new GameLogic();
-//    private List<Square> allSquares = new ArrayList<>();
-    private Square[][]squares = new Square[3][3];
+    private final GameLogic gameLogic = new GameLogic();
+    private final Square[][]squares = new Square[3][3];
     private VBox rules;
 
     @Override
     public void start(Stage primaryStage) throws Exception {
         Scene scene = new Scene(createParent());
-//        scene.getStylesheets().add(getClass().getResource("/style.css").toExternalForm());
         rules = getRulesView();
+        rules.setBackground(createBackground());
         primaryStage.setScene(scene);
         primaryStage.setTitle("X's and O's Game");
         primaryStage.setResizable(false);
@@ -59,7 +54,6 @@ public class XAndOGame extends Application {
                 tile.setTranslateX(j * 200);
                 tile.setTranslateY(i * 200);
                 tile.setId(""+i+j);
-//                allSquares.add(tile);
                 squares[i][j] = tile;
                 root.getChildren().add(tile);
             }
@@ -70,8 +64,7 @@ public class XAndOGame extends Application {
     }
 
     private VBox getRulesView() throws IOException {
-        VBox rules = FXMLLoader.load(getClass().getResource("/rules.fxml"));
-        return rules;
+        return FXMLLoader.load(getClass().getResource("/rules.fxml"));
     }
 
 
@@ -128,7 +121,6 @@ public class XAndOGame extends Application {
             @Override
             public void handle(ActionEvent event) {
                 gameLogic.createGameTableWithDefaultValues();
-//                allSquares.forEach(e -> e.getText().setText(""));
                 for (Square[] square : squares) {
                     for (Square square1 : square) {
                         square1.getText().setText("");
@@ -144,10 +136,11 @@ public class XAndOGame extends Application {
         BackgroundImage backgroundImage = new BackgroundImage(imgBackground, BackgroundRepeat.REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, backgroundSize);
         return new Background(backgroundImage);
     }
+
     public class Square extends StackPane {
         private static final int SQUARE_HEIGHT = 200;
         private static final int SQUARE_WIDTH = 200;
-        private Text text = new Text();
+        private final Text text = new Text();
 
         public Square(){
             Rectangle border = new Rectangle(SQUARE_WIDTH,SQUARE_HEIGHT);
@@ -164,54 +157,9 @@ public class XAndOGame extends Application {
                         drawX();
                         gameLogic.markAMove(this);
                         gameLogic.setxTurn(false);
-                    }
-                }
-                if (gameLogic.checkIfPlayerWon()){
-                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                    alert.setHeaderText("Winner!!");
-                    alert.setContentText("Player won this game!");
-                    alert.setTitle("Winner!!");
-                    alert.setResizable(false);
-                    alert.setHeight(20);
-                    alert.show();
-                    gameLogic.createGameTableWithDefaultValues();
-//                    allSquares.forEach(e -> e.getText().setText(""));
-                    for (Square[] square : squares) {
-                        for (Square square1 : square) {
-                            square1.getText().setText("");
-                        }
-                    }
-                }
-                if (gameLogic.checkIfComputerWon()){
-                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                    alert.setHeaderText("Looser!!");
-                    alert.setContentText("Computer won this game!");
-                    alert.setTitle("Looser!!");
-                    alert.setResizable(false);
-                    alert.setHeight(20);
-                    alert.show();
-                    gameLogic.createGameTableWithDefaultValues();
-//                    allSquares.forEach(e -> e.getText().setText(""));
-                    for (Square[] square : squares) {
-                        for (Square square1 : square) {
-                            square1.getText().setText("");
-                        }
-                    }
-                }
-                if (gameLogic.checkIfDraw()){
-                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                    alert.setHeaderText("Draw game!!");
-                    alert.setContentText("It was a typical draw!");
-                    alert.setTitle("Draw game!!");
-                    alert.setResizable(false);
-                    alert.setHeight(20);
-                    alert.show();
-                    gameLogic.createGameTableWithDefaultValues();
-//                    allSquares.forEach(e -> e.getText().setText(""));
-                    for (Square[] square : squares) {
-                        for (Square square1 : square) {
-                            square1.getText().setText("");
-                        }
+                        checkIfPlayerWon();
+                        checkIfComputerWon();
+                        checkIfDraw();
                     }
                 }
 
@@ -219,8 +167,61 @@ public class XAndOGame extends Application {
                     System.out.println("computer move");
                     gameLogic.computerMove(squares);
                     gameLogic.setxTurn(true);
+                    checkIfPlayerWon();
+                    checkIfComputerWon();
+                    checkIfDraw();
                 }
             });
+        }
+
+        private void checkIfDraw() {
+            if (gameLogic.checkIfDraw()){
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setHeaderText("Draw game!!");
+                alert.setContentText("It was a typical draw!");
+                alert.setTitle("Draw game!!");
+                alert.setResizable(false);
+                alert.setHeight(20);
+                alert.show();
+                gameLogic.createGameTableWithDefaultValues();
+                cleanGameBoard();
+            }
+        }
+
+        private void checkIfComputerWon() {
+            if (gameLogic.checkIfComputerWon()){
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setHeaderText("Looser!!");
+                alert.setContentText("Computer won this game!");
+                alert.setTitle("Looser!!");
+                alert.setResizable(false);
+                alert.setHeight(20);
+                alert.show();
+                gameLogic.createGameTableWithDefaultValues();
+                cleanGameBoard();
+            }
+        }
+
+        private void checkIfPlayerWon() {
+            if (gameLogic.checkIfPlayerWon()){
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setHeaderText("Winner!!");
+                alert.setContentText("Player won this game!");
+                alert.setTitle("Winner!!");
+                alert.setResizable(false);
+                alert.setHeight(20);
+                alert.show();
+                gameLogic.createGameTableWithDefaultValues();
+                cleanGameBoard();
+            }
+        }
+
+        private void cleanGameBoard() {
+            for (Square[] square : squares) {
+                for (Square square1 : square) {
+                    square1.getText().setText("");
+                }
+            }
         }
 
         private void drawX(){
@@ -237,10 +238,6 @@ public class XAndOGame extends Application {
 
         public Text getText() {
             return text;
-        }
-
-        public void setText(Text text) {
-            this.text = text;
         }
     }
 
