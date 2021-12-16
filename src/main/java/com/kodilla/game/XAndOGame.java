@@ -30,7 +30,8 @@ public class XAndOGame extends Application {
     private static final int PANE_WIDTH = 605;
     private final Image imgBackground = new Image("file:src/main/resources/paladin.jpg");
     private GameLogic gameLogic = new GameLogic();
-    private List<Square> allSquares = new ArrayList<>();
+//    private List<Square> allSquares = new ArrayList<>();
+    private Square[][]squares = new Square[3][3];
     private VBox rules;
 
     @Override
@@ -58,7 +59,8 @@ public class XAndOGame extends Application {
                 tile.setTranslateX(j * 200);
                 tile.setTranslateY(i * 200);
                 tile.setId(""+i+j);
-                allSquares.add(tile);
+//                allSquares.add(tile);
+                squares[i][j] = tile;
                 root.getChildren().add(tile);
             }
         }
@@ -126,7 +128,12 @@ public class XAndOGame extends Application {
             @Override
             public void handle(ActionEvent event) {
                 gameLogic.createGameTableWithDefaultValues();
-                allSquares.forEach(e -> e.getText().setText(""));
+//                allSquares.forEach(e -> e.getText().setText(""));
+                for (Square[] square : squares) {
+                    for (Square square1 : square) {
+                        square1.getText().setText("");
+                    }
+                }
             }
         });
     }
@@ -152,21 +159,11 @@ public class XAndOGame extends Application {
             getChildren().addAll(border,text);
 
             setOnMouseClicked(event -> {
-                if (event.getButton() == MouseButton.PRIMARY){
-                    if (text.getText().equals("")){
-                        if(gameLogic.isxTurn()){
-                            drawX();
-                            gameLogic.markAMove(this);
-                            gameLogic.setxTurn(false);
-                        }
-                    }
-                } else if (event.getButton() == MouseButton.SECONDARY){
-                    if (text.getText().equals("")){
-                        if (!gameLogic.isxTurn()){
-                            drawO();
-                            gameLogic.markAMove(this);
-                            gameLogic.setxTurn(true);
-                        }
+                if(gameLogic.isxTurn()) {
+                    if (text.getText().equals("")) {
+                        drawX();
+                        gameLogic.markAMove(this);
+                        gameLogic.setxTurn(false);
                     }
                 }
                 if (gameLogic.checkIfPlayerWon()){
@@ -178,7 +175,12 @@ public class XAndOGame extends Application {
                     alert.setHeight(20);
                     alert.show();
                     gameLogic.createGameTableWithDefaultValues();
-                    allSquares.forEach(e -> e.getText().setText(""));
+//                    allSquares.forEach(e -> e.getText().setText(""));
+                    for (Square[] square : squares) {
+                        for (Square square1 : square) {
+                            square1.getText().setText("");
+                        }
+                    }
                 }
                 if (gameLogic.checkIfComputerWon()){
                     Alert alert = new Alert(Alert.AlertType.INFORMATION);
@@ -189,7 +191,12 @@ public class XAndOGame extends Application {
                     alert.setHeight(20);
                     alert.show();
                     gameLogic.createGameTableWithDefaultValues();
-                    allSquares.forEach(e -> e.getText().setText(""));
+//                    allSquares.forEach(e -> e.getText().setText(""));
+                    for (Square[] square : squares) {
+                        for (Square square1 : square) {
+                            square1.getText().setText("");
+                        }
+                    }
                 }
                 if (gameLogic.checkIfDraw()){
                     Alert alert = new Alert(Alert.AlertType.INFORMATION);
@@ -200,7 +207,18 @@ public class XAndOGame extends Application {
                     alert.setHeight(20);
                     alert.show();
                     gameLogic.createGameTableWithDefaultValues();
-                    allSquares.forEach(e -> e.getText().setText(""));
+//                    allSquares.forEach(e -> e.getText().setText(""));
+                    for (Square[] square : squares) {
+                        for (Square square1 : square) {
+                            square1.getText().setText("");
+                        }
+                    }
+                }
+
+                if (!gameLogic.isxTurn()) {
+                    System.out.println("computer move");
+                    gameLogic.computerMove(squares);
+                    gameLogic.setxTurn(true);
                 }
             });
         }
@@ -211,7 +229,7 @@ public class XAndOGame extends Application {
             text.setFont(Font.font("Brush Script MT",100));
         }
 
-        private void drawO(){
+        public void drawO(){
             text.setText("O");
             text.setFill(Color.WHITE);
             text.setFont(Font.font("Brush Script MT",100));

@@ -1,9 +1,12 @@
 package com.kodilla.game;
 
+import java.util.Random;
+
 public class GameLogic {
     private boolean isXTurn = true;
     private boolean isGameRunning = true;
     private String[][] table;
+    private Random random = new Random();
 
     public boolean isxTurn() {
         return isXTurn;
@@ -24,6 +27,7 @@ public class GameLogic {
         this.isXTurn = true;
         this.isGameRunning = true;
     }
+
 
     public boolean checkIfPlayerWon(){
         boolean result = false;
@@ -90,5 +94,19 @@ public class GameLogic {
         int x = Integer.parseInt(split[0]);
         int y = Integer.parseInt(split[1]);
         table[x][y] = text;
+    }
+
+
+    public void computerMove(XAndOGame.Square[][] squares) {
+        while (!isXTurn){
+            int i = random.nextInt(3);
+            int j = random.nextInt(3);
+            if (table[i][j].equals("")){
+                XAndOGame.Square square = squares[i][j];
+                markAMove(square);
+                square.drawO();
+                isXTurn = true;
+            }
+        }
     }
 }
