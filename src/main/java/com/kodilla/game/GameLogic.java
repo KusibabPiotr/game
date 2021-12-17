@@ -90,6 +90,5 @@ public class GameLogic {
         int x = Integer.parseInt(split[0]);
         int y = Integer.parseInt(split[1]);
         table[x][y] = text;
-        System.out.printf("x: %d y: %d >>> %s\n",x,y,text);
     }
 }
