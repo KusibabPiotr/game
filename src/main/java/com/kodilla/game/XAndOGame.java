@@ -164,7 +164,6 @@ public class XAndOGame extends Application {
                 }
 
                 if (!gameLogic.isxTurn()) {
-                    System.out.println("computer move");
                     gameLogic.computerMove(squares);
                     gameLogic.setxTurn(true);
                     checkIfPlayerWon();
