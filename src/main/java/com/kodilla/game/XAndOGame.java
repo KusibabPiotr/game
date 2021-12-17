@@ -10,6 +10,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
@@ -27,13 +28,10 @@ public class XAndOGame extends Application {
     private final Image imgBackground = new Image("file:src/main/resources/paladin.jpg");
     private final GameLogic gameLogic = new GameLogic();
     private final Square[][]squares = new Square[3][3];
-    private VBox rules;
 
     @Override
     public void start(Stage primaryStage) throws Exception {
         Scene scene = new Scene(createParent());
-        rules = getRulesView();
-        rules.setBackground(createBackground());
         primaryStage.setScene(scene);
         primaryStage.setTitle("X's and O's Game");
         primaryStage.setResizable(false);
@@ -62,11 +60,6 @@ public class XAndOGame extends Application {
         gameLogic.createGameTableWithDefaultValues();
         return root;
     }
-
-    private VBox getRulesView() throws IOException {
-        return FXMLLoader.load(getClass().getResource("/rules.fxml"));
-    }
-
 
     private void addButtons(AnchorPane root) {
         addNewGameButton(root);
@@ -101,10 +94,13 @@ public class XAndOGame extends Application {
         game_rules.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                Stage stage = new Stage();
-                stage.setTitle("Game Rules");
-                stage.setScene(new Scene(rules));
-                stage.show();
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Game rules");
+                alert.setHeaderText("There is one rule!!");
+                alert.setContentText("*Put 3 crosses in column, row or across board to win!");
+                alert.setResizable(false);
+                alert.setHeight(20);
+                alert.show();
             }
         });
     }
